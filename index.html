@@ -116,7 +116,7 @@ body[data-theme]:not([data-theme=default]) .ringtone-name-field #ringtoneName{ba
 
 /* Light trail toward the Dynamic Island safe area; never covers or controls iOS UI */
 .island-theme-beam{position:fixed;width:20px;height:20px;border-radius:50%;background:var(--beam-color);box-shadow:0 0 18px 9px var(--beam-color),0 0 45px 16px var(--beam-color);filter:blur(3px);pointer-events:none;z-index:99;opacity:0}
-.island-theme-halo{position:fixed;top:calc(env(safe-area-inset-top, 0px) * .22 + 15px);left:50%;width:clamp(100px,27vw,135px);height:clamp(28px,8vw,39px);border-radius:100px;border:2px solid var(--beam-color);box-shadow:0 0 12px 4px var(--beam-color),0 0 28px 10px var(--beam-color),inset 0 0 15px 4px var(--beam-color);filter:blur(2px);pointer-events:none;z-index:99;opacity:0}
+.island-theme-halo{position:fixed;top:calc(env(safe-area-inset-top, 0px) * .22 + 12px);left:50%;width:clamp(100px,27vw,135px);height:clamp(28px,8vw,39px);border-radius:100px;border:2px solid var(--beam-color);box-shadow:0 0 12px 4px var(--beam-color),0 0 28px 10px var(--beam-color),inset 0 0 15px 4px var(--beam-color);filter:blur(2px);pointer-events:none;z-index:99;opacity:0}
 
 /* Paint the iPhone safe-area and page on the same root surface to avoid a horizontal seam. */
 html{min-height:100%;background:#0b0d17}
