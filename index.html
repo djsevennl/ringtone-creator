@@ -116,7 +116,7 @@ body[data-theme]:not([data-theme=default]) .ringtone-name-field #ringtoneName{ba
 
 /* Light trail toward the Dynamic Island safe area; never covers or controls iOS UI */
 .island-theme-beam{position:fixed;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 3px 1px #fff,0 0 8px 3px var(--beam-color),0 0 16px 4px var(--beam-color);filter:blur(.35px);pointer-events:none;z-index:99;opacity:0}
-.island-theme-halo{position:fixed;top:calc(env(safe-area-inset-top, 0px) * .22 + 4px);left:50%;width:clamp(106px,28.5vw,143px);height:clamp(28px,8vw,39px);border-radius:100px;border:3px solid var(--beam-color);box-shadow:0 0 3px 2px var(--beam-core),0 0 11px 5px var(--beam-color),0 0 24px 9px var(--beam-color),inset 0 0 8px 3px var(--beam-core),inset 0 0 16px 5px var(--beam-color);filter:blur(1px);pointer-events:none;z-index:99;opacity:0}
+.island-theme-halo{position:fixed;top:calc(env(safe-area-inset-top, 0px) * .22 + 4px);left:50%;width:clamp(116px,31vw,155px);height:clamp(32px,9vw,44px);border-radius:100px;border:3px solid var(--beam-color);box-shadow:0 0 3px 2px var(--beam-core),0 0 11px 5px var(--beam-color),0 0 24px 9px var(--beam-color),inset 0 0 8px 3px var(--beam-core),inset 0 0 16px 5px var(--beam-color);filter:blur(1px);pointer-events:none;z-index:99;opacity:0}
 
 /* Safari has a lower viewport origin than an installed iPhone web app. */
 @media all and (display-mode:browser){.island-theme-halo{top:-18px}}
