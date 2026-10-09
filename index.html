@@ -133,8 +133,8 @@ body{min-height:100dvh}
  .island-theme-halo-contrast{top:calc(env(safe-area-inset-top, 0px) * .22 + 1px);border-color:var(--beam-color);background:transparent;box-shadow:0 0 2px 1px var(--beam-core),0 0 6px 2px var(--beam-color),0 0 13px 5px var(--beam-color),0 0 20px 7px var(--beam-color),inset 0 0 5px 1px var(--beam-core),inset 0 0 9px 2px var(--beam-color);filter:blur(1px)}
 
 /* Three centered, theme-aware import pills */
-.new-source{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:8px;max-width:460px;width:100%;margin:12px auto 16px}
-.new-source #chooseFile,.new-source #choosePhotos,.new-source #recordbox,.new-source #record{box-sizing:border-box;flex:1 1 0;min-width:0;max-width:none;width:auto;margin:0}
+.new-source{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:8px;max-width:360px;width:max-content;margin:12px auto 16px}
+.new-source #chooseFile,.new-source #choosePhotos,.new-source #recordbox,.new-source #record{box-sizing:border-box;flex:0 0 auto;min-width:0;max-width:none;width:auto;margin:0}.new-source #chooseFile{width:102px}.new-source #choosePhotos{width:115px}.new-source #recordbox,.new-source #record{width:125px}
 .new-source #recordbox{display:flex;padding:0;border:0;background:none}
 .new-source #chooseFile,.new-source #choosePhotos,.new-source #record{display:flex;align-items:center;justify-content:center;min-height:32px;height:32px;border-radius:999px;padding:4px 5px;white-space:nowrap;font-size:clamp(9px,2.4vw,11px);font-weight:600;line-height:1.15;text-align:center;border:1px solid rgba(190,161,243,.35);color:#fff}
 .new-source #chooseFile{background:linear-gradient(110deg,rgba(161,112,223,.28),rgba(91,155,226,.28))}
