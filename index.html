@@ -35,10 +35,10 @@ function fadeFactor(t){if(!buffer)return 1;const duration=Math.max(.01,end-start
 // Effectinstellingen worden gedeeld door live afspelen en WAV-export.
 const fxIds=["pitch","key","echo","reverb","noise","bass","mid","treble"];
 const fxVal=id=>Number($('fx-'+id).value);
-const fxSemitones=()=>fxVal('pitch')+fxVal('key');
+const fxSemitones=()=>fxVal('pitch');
 const fxRate=()=>Math.pow(2,fxSemitones()/12);
 for(const [id,unit] of [["pitch"," st"],["key"," st"],["echo","%"],["reverb","%"],["noise","%"],["bass"," dB"],["mid"," dB"],["treble"," dB"]]){
-  $('fx-'+id).addEventListener('input',()=>{$('fx-'+id+'-val').textContent=fxVal(id)+unit;if(loopSource){loopSource.playbackRate.value=fxRate()}else $('audio').playbackRate=fxRate()});
+  $('fx-'+id).addEventListener('input',()=>{$('fx-'+id+'-val').textContent=fxVal(id)+unit;if(id==='key'){refreshKeyPreview()}else if(loopSource){loopSource.playbackRate.value=fxRate()}else $('audio').playbackRate=fxRate()});
 }
 function processFx(input,rate){
   const n=input.length,out=new Float32Array(n);out.set(input);
@@ -54,17 +54,52 @@ function processFx(input,rate){
   if(echo||reverb)for(let i=0;i<n;i++){let v=out[i];if(echo&&i>=delay)v+=out[i-delay]*echo*.55;if(reverb&&i>=revDelay)v+=out[i-revDelay]*reverb*.28;out[i]=v}
   return out;
 }
+
+// Overlap-add granular pitch shift: preserves the number of samples (duration).
+function shiftKey(samples,semitones){
+ if(!semitones)return new Float32Array(samples);
+ const ratio=Math.pow(2,semitones/12),n=samples.length,out=new Float32Array(n),weight=new Float32Array(n);
+ const grain=2048,hop=512,half=grain/2;
+ for(let pos=0;pos<n;pos+=hop){
+  const sourceCenter=pos;
+  for(let j=0;j<grain;j++){
+   const dest=pos+j-half;if(dest<0||dest>=n)continue;
+   const src=sourceCenter+(j-half)*ratio,k=Math.floor(src),f=src-k;
+   if(k<0||k+1>=n)continue;
+   const w=.5-.5*Math.cos(2*Math.PI*j/(grain-1));
+   out[dest]+=((samples[k]||0)*(1-f)+(samples[k+1]||0)*f)*w;weight[dest]+=w;
+  }
+ }
+ for(let i=0;i<n;i++)out[i]=weight[i]>.00001?out[i]/weight[i]:samples[i];
+ return out;
+}
+let keyPreviewBuffer=null,keyPreviewFor=null;
+function getKeyPreview(){
+ if(!buffer)return null;
+ const key=fxVal('key');
+ if(!key)return buffer;
+ if(keyPreviewBuffer&&keyPreviewFor===buffer&&keyPreviewBuffer._key===key)return keyPreviewBuffer;
+ const C=window.AudioContext||window.webkitAudioContext,ctx=new C();
+ const result=ctx.createBuffer(buffer.numberOfChannels,buffer.length,buffer.sampleRate);
+ for(let c=0;c<buffer.numberOfChannels;c++)result.getChannelData(c).set(shiftKey(buffer.getChannelData(c),key));
+ ctx.close().catch(()=>{});
+ result._key=key;keyPreviewFor=buffer;keyPreviewBuffer=result;return result;
+}
+function refreshKeyPreview(){
+ keyPreviewBuffer=null;keyPreviewFor=null;
+ if(loopSource){startSeamlessLoop().catch(()=>status('Voorbeeld kan niet worden gestart.'))}
+}
 function processedExportChannels(a,b,rate){
   const speed=fxRate(),length=Math.max(1,Math.ceil((b-a)/speed)),channels=[];
   for(let c=0;c<Math.min(2,buffer.numberOfChannels);c++){
-    const src=processFx(buffer.getChannelData(c).subarray(a,b),rate),out=new Float32Array(length);
+    const src=processFx(shiftKey(buffer.getChannelData(c).subarray(a,b),fxVal('key')),rate),out=new Float32Array(length);
     for(let i=0;i<length;i++){const p=i*speed,k=Math.floor(p),f=p-k;out[i]=(src[k]||0)*(1-f)+(src[k+1]||0)*f}
     channels.push(out);
   }
 
   return channels;
 }
-let loopCtx=null,loopSource=null,loopGain=null,loopStarted=0,loopOffset=0;function stopSeamlessLoop(){if(loopSource){try{loopSource.stop()}catch{}try{loopSource.disconnect()}catch{}loopSource=null}if(loopCtx){loopCtx.close().catch(()=>{});loopCtx=null}loopGain=null}async function startSeamlessLoop(){if(!buffer||end<=start)return;stopSeamlessLoop();const C=window.AudioContext||window.webkitAudioContext;const ctx=new C();loopCtx=ctx;const source=ctx.createBufferSource(),gain=ctx.createGain();loopSource=source;loopGain=gain;source.buffer=buffer;source.playbackRate.value=fxRate();source.loop=true;source.loopStart=start;source.loopEnd=end;const low=ctx.createBiquadFilter(),mid=ctx.createBiquadFilter(),high=ctx.createBiquadFilter();low.type='lowshelf';low.frequency.value=220;low.gain.value=fxVal('bass');mid.type='peaking';mid.frequency.value=1000;mid.Q.value=.8;mid.gain.value=fxVal('mid');high.type='highshelf';high.frequency.value=3000;high.gain.value=fxVal('treble');const delay=ctx.createDelay(.5),feedback=ctx.createGain(),wet=ctx.createGain();delay.delayTime.value=.24;feedback.gain.value=fxVal('echo')/100*.55;wet.gain.value=fxVal('echo')/100;source.connect(low);low.connect(mid);mid.connect(high);high.connect(gain);high.connect(delay);delay.connect(feedback);feedback.connect(delay);delay.connect(wet);wet.connect(gain);gain.connect(ctx.destination);gain.gain.value=Math.min(1,+$('volume').value/100)*fadeFactor(start);await ctx.resume();loopStarted=ctx.currentTime;loopOffset=start;source.start(0,start);$('audio').pause();$('audio').currentTime=start;$('play').textContent='Ⅱ';draw()}
+let loopCtx=null,loopSource=null,loopGain=null,loopStarted=0,loopOffset=0;function stopSeamlessLoop(){if(loopSource){try{loopSource.stop()}catch{}try{loopSource.disconnect()}catch{}loopSource=null}if(loopCtx){loopCtx.close().catch(()=>{});loopCtx=null}loopGain=null}async function startSeamlessLoop(){if(!buffer||end<=start)return;stopSeamlessLoop();const C=window.AudioContext||window.webkitAudioContext;const ctx=new C();loopCtx=ctx;const source=ctx.createBufferSource(),gain=ctx.createGain();loopSource=source;loopGain=gain;source.buffer=getKeyPreview();source.playbackRate.value=fxRate();source.loop=true;source.loopStart=start;source.loopEnd=end;const low=ctx.createBiquadFilter(),mid=ctx.createBiquadFilter(),high=ctx.createBiquadFilter();low.type='lowshelf';low.frequency.value=220;low.gain.value=fxVal('bass');mid.type='peaking';mid.frequency.value=1000;mid.Q.value=.8;mid.gain.value=fxVal('mid');high.type='highshelf';high.frequency.value=3000;high.gain.value=fxVal('treble');const delay=ctx.createDelay(.5),feedback=ctx.createGain(),wet=ctx.createGain();delay.delayTime.value=.24;feedback.gain.value=fxVal('echo')/100*.55;wet.gain.value=fxVal('echo')/100;source.connect(low);low.connect(mid);mid.connect(high);high.connect(gain);high.connect(delay);delay.connect(feedback);feedback.connect(delay);delay.connect(wet);wet.connect(gain);gain.connect(ctx.destination);gain.gain.value=Math.min(1,+$('volume').value/100)*fadeFactor(start);await ctx.resume();loopStarted=ctx.currentTime;loopOffset=start;source.start(0,start);$('audio').pause();$('audio').currentTime=start;$('play').textContent='Ⅱ';draw()}
 function animateWave(ts){if(ts-lastWaveFrame>=33){lastWaveFrame=ts;if(buffer&&(loopSource||!$('audio').paused)){wavePhase+=.065;syncPreviewGain();draw()}}requestAnimationFrame(animateWave)}
 requestAnimationFrame(animateWave);
 function pos(e){const r=canvas.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*buffer.duration}let scrubWasPlaying=false,scrubWasLoop=false;function scrubTo(t){const at=Math.max(start,Math.min(end-.001,t));$('audio').currentTime=at;if(loopSource&&loopCtx){const old=loopSource;try{old.stop()}catch{}try{old.disconnect()}catch{}const src=loopCtx.createBufferSource();src.buffer=buffer;src.loop=true;src.loopStart=start;src.loopEnd=end;src.connect(loopGain);loopSource=src;loopOffset=at;loopStarted=loopCtx.currentTime;src.start(0,at)}syncPreviewGain();draw()}canvas.addEventListener('pointerdown',e=>{if(!buffer)return;e.preventDefault();const rect=canvas.getBoundingClientRect(),px=e.clientX-rect.left,t=pos(e),sx=start/buffer.duration*rect.width,ex=end/buffer.duration*rect.width,hit=24;drag=Math.abs(px-sx)<=hit?'start':Math.abs(px-ex)<=hit?'end':'playhead';scrubWasLoop=!!loopSource;scrubWasPlaying=scrubWasLoop||!$('audio').paused;canvas.setPointerCapture(e.pointerId);if(drag==='playhead'){scrubTo(t)}else{stopSeamlessLoop();$('audio').pause();$('play').textContent='▶';move(drag,t-(drag==='start'?start:end))}});canvas.addEventListener('pointermove',e=>{if(!drag||!buffer)return;e.preventDefault();const t=pos(e);if(drag==='playhead')scrubTo(t);else move(drag,t-(drag==='start'?start:end))});canvas.addEventListener('pointerup',()=>{drag=null});canvas.addEventListener('pointercancel',()=>{drag=null});$('play').onclick=async()=>{if(!buffer)return;if(loop){if(loopSource){stopSeamlessLoop();$('play').textContent='▶';draw()}else{try{await startSeamlessLoop()}catch{stopSeamlessLoop();status('Loop afspelen niet toegestaan')}}return}const a=$('audio');if(!a.paused){a.pause();$('play').textContent='▶';draw();return}if(a.currentTime<start||a.currentTime>=end)a.currentTime=start;try{await a.play();$('play').textContent='Ⅱ';draw()}catch{status('Afspelen niet toegestaan')}};$('audio').ontimeupdate=()=>{syncPreviewGain();draw();if($('audio').currentTime>=end){if(loop){$('audio').currentTime=start}else{$('audio').pause();$('play').textContent='▶'}}};$('audio').onended=()=>{$('play').textContent='▶';draw()};$('reset').onclick=()=>{stopSeamlessLoop();$('audio').pause();$('audio').currentTime=start;$('play').textContent='▶';draw()};$('back').onclick=()=>{$('audio').currentTime=Math.max(start,$('audio').currentTime-1);draw()};$('forward').onclick=()=>{$('audio').currentTime=Math.min(end,$('audio').currentTime+1);draw()};$('loop').onclick=()=>{stopSeamlessLoop();$('audio').pause();$('play').textContent='▶';loop=!loop;$('loop').style.borderColor=loop?'#ac8aff':'#393752'};$('volume').oninput=()=>{syncPreviewGain();$('volumeVal').textContent=$('volume').value+'%'};['fadeIn','fadeOut'].forEach(id=>{$(id+'Sec').oninput=()=>{$(id+'Val').textContent=(+$(id+'Sec').value).toFixed(1)+'s';syncPreviewGain()};$(id).onchange=syncPreviewGain});$('record').onclick=async()=>{if(recorder&&recorder.state==='recording'){recorder.stop();$('record').textContent='● Audio opnemen';return}try{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw Error('Opname niet ondersteund');const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];const types=['audio/mp4','audio/webm;codecs=opus','audio/webm','audio/ogg'];const supported=types.find(t=>MediaRecorder.isTypeSupported(t));recorder=new MediaRecorder(stream,supported?{mimeType:supported}:undefined);recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};recorder.onerror=()=>status('Opname mislukt. Probeer opnieuw.');recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());$('record').textContent='● Audio opnemen';if(!chunks.length){status('Geen audio opgenomen.');return}const mime=recorder.mimeType||chunks[0]?.type||'audio/mp4';const ext=mime.includes('mp4')?'m4a':mime.includes('ogg')?'ogg':'webm';loadFile(new File(chunks,'opname.'+ext,{type:mime}))};recorder.start();$('record').textContent='■ Stop opname';status('Opname bezig…')}catch(e){status(e?.name==='NotAllowedError'?'Microfoontoegang geweigerd. Sta microfoon toe in Safari.':e?.name==='NotFoundError'?'Geen microfoon gevonden.':'Audio opnemen mislukt: '+(e?.message||'onbekende fout'))}};
