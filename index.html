@@ -57,8 +57,8 @@ body[data-theme=champagne]{--theme-bg:#f5efe5;--theme-text:#47382c;--theme-panel
 body[data-theme=pearlblue]{--theme-bg:#eef6fb;--theme-text:#273f55;--theme-panel:#fff;--theme-wave:#dfedf8;--theme-border:#b2ccdf;--theme-accent:#4688b8;--theme-accent2:#9ccbe9;--theme-muted:#607b90;--theme-glow:#6da9d640;--theme-accent-soft:#9ccbe980;--theme-accent2-soft:#4688b850;--theme-button-text:#fff}
 body[data-theme=rosepearl]{--theme-bg:#fff2f6;--theme-text:#59394b;--theme-panel:#fffafd;--theme-wave:#f7e2eb;--theme-border:#e6bfd0;--theme-accent:#bd7199;--theme-accent2:#e5b1c9;--theme-muted:#927184;--theme-glow:#dca2bf40;--theme-accent-soft:#e5b1c980;--theme-accent2-soft:#bd719950;--theme-button-text:#fff}
 
-body[data-theme]:not([data-theme=default]) .brand-logo{filter:var(--logo-filter);box-shadow:0 0 13px var(--theme-glow);transition:filter .3s,box-shadow .3s}
-body[data-theme=bruin]{--logo-filter:sepia(.8) hue-rotate(340deg) saturate(.85)}
+body[data-theme]:not([data-theme=default]) .brand-logo{filter:var(--logo-filter);box-shadow:0 0 13px var(--theme-glow),0 0 22px var(--theme-accent2-soft);transition:filter 1.1s ease,box-shadow 1.1s ease}
+body[data-theme=bruin]{--logo-filter:sepia(1) hue-rotate(340deg) saturate(1.5)}
 body[data-theme=grijs]{--logo-filter:grayscale(1) brightness(1.2)}
 body[data-theme=zwart]{--logo-filter:grayscale(1) brightness(.75)}
 body[data-theme=champagne]{--logo-filter:sepia(1) hue-rotate(345deg) saturate(.55) brightness(1.3)}
