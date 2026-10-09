@@ -15,12 +15,12 @@ header .jay-header-content{position:relative;z-index:2}
 .sub{letter-spacing:.5px;text-transform:none;font-size:12px}
 .wavebox{border-color:#7872ad;box-shadow:0 0 0 1px #8b83c033,0 0 16px #727bd41c}
 @media(prefers-reduced-motion:reduce){.jay-aura-wave{animation:none!important}}
- .new-source{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:nowrap;margin:12px auto 16px;max-width:520px;width:100%}
+ .new-source{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:nowrap;margin:12px auto 16px;max-width:520px;width:100%}
 .new-source #recordbox{display:flex;flex:0 0 138px;width:138px;justify-content:center;margin:0;padding:0;border:0;background:none}
 .new-source #newRingtone,.new-source #record{appearance:none;box-sizing:border-box;display:inline-flex;flex:0 0 138px;width:138px;min-width:0;max-width:138px;height:34px;min-height:34px;align-items:center;justify-content:center;text-align:center;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:650;line-height:1.2;padding:6px 3px;border-radius:15px;border:1px solid rgba(190,161,243,.25);color:#fff}
 .new-source #newRingtone{margin:0;background:linear-gradient(110deg,rgba(161,112,223,.28),rgba(91,155,226,.28))}
 .new-source #record{background:linear-gradient(110deg,rgba(91,155,226,.28),rgba(161,112,223,.28))}
-@media(max-width:390px){.new-source{gap:7px}.new-source #newRingtone,.new-source #record{flex-basis:138px;max-width:138px;font-size:11px;padding:6px 3px}}
+@media(max-width:390px){.new-source{gap:12px}.new-source #newRingtone,.new-source #record{flex-basis:138px;max-width:138px;font-size:11px;padding:6px 3px}}
 .effects{margin:12px 0;border:1px solid rgba(190,161,243,.24);border-radius:15px;background:rgba(70,52,108,.13);padding:12px}.effects summary{cursor:pointer;font-weight:650;color:#e7dcff}.effects summary span{font-size:11px;color:#aaa0be;font-weight:400}.effect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px}.effect-control{font-size:12px;min-width:0;display:block}.effect-control output{float:right;color:#b7a5e3}.effect-control input[type=range]{width:100%;margin-top:8px}.fx-normalize{grid-column:1/-1}.effect-grid p{grid-column:1/-1;margin:0;font-size:11px}
 .effects summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.effects summary::-webkit-details-marker{display:none}.effects summary .dj-title{font-size:14px;color:#e7dcff;font-weight:700}.effects summary .dj-reset{margin-left:auto;padding:5px 11px;border-radius:10px;border:1px solid rgba(190,161,243,.35);background:rgba(140,106,199,.16);color:#eee2ff;font-size:12px;font-weight:600}
 .effect-control input[type=range]{touch-action:pan-x;accent-color:#b89ae8;cursor:pointer}.effect-control input[type=range]::-webkit-slider-thumb{cursor:grab}
@@ -29,8 +29,8 @@ header .jay-header-content{position:relative;z-index:2}
 .effects .effect-grid{overflow:hidden;transition:height .38s cubic-bezier(.22,1,.36,1),opacity .32s ease,margin-top .38s ease;will-change:height,opacity}.effects.dj-animating .effect-grid{display:grid!important}.effects summary{user-select:none;-webkit-user-select:none}@media(prefers-reduced-motion:reduce){.effects .effect-grid{transition:none!important}}
 
 /* Seven switchable themes; default preserves the original styling */
-.theme-picker{display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap;margin:-2px auto 13px}
-.theme-picker button{width:25px;height:25px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:var(--swatch);padding:0;box-shadow:0 1px 6px #0004;transition:transform .2s,outline-color .2s}
+.theme-picker{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap;margin:-2px auto 16px}
+.theme-picker button{width:21px;height:21px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:var(--swatch);padding:0;box-shadow:0 1px 6px #0004;transition:transform .2s,outline-color .2s}
 .theme-picker button[aria-pressed=true]{outline:2px solid var(--theme-accent,#ac82e0);outline-offset:3px;transform:scale(1.08)}
 body[data-theme]:not([data-theme=default]){background:var(--theme-bg);color:var(--theme-text);transition:background .25s,color .25s}
 body[data-theme]:not([data-theme=default]) .panel,body[data-theme]:not([data-theme=default]) .tabs button,body[data-theme]:not([data-theme=default]) .control{background:var(--theme-panel);border-color:var(--theme-border);color:var(--theme-text)}
