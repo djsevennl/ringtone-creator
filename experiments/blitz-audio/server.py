@@ -63,7 +63,8 @@ async def probe_alternative(video_id: str):
                 break
         except Exception as exc:
             # Do not expose cookies, full upstream URLs, or internal tracebacks.
+            reason = "youtube_bot_challenge" if ("not a bot" in str(exc).lower() or "sign in to confirm" in str(exc).lower()) else ("upstream_forbidden" if "403" in str(exc) else ("rate_limited" if "429" in str(exc) else ("timeout" if "timed out" in str(exc).lower() else "other")))
             results.append({"client": client, "ok": False,
-                            "error_type": type(exc).__name__})
+                            "error_type": type(exc).__name__, "reason": reason})
     return {"ok": any(r["ok"] for r in results), "results": results,
             "downloads": False, "cookies": False}
