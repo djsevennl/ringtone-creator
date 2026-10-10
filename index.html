@@ -5,16 +5,20 @@
 header{position:relative;isolation:isolate;overflow:visible}
 header .jay-header-content{position:relative;z-index:2}
 .jay-header-aura{position:absolute;left:50%;top:-88px;transform:translateX(-50%);width:100vw;height:calc(100% + 76px);overflow:hidden;pointer-events:none;z-index:0;opacity:.94;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 67%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 20%,#000 67%,transparent 100%)}
-.jay-aura-wave{position:absolute;left:-50%;width:200%;border-radius:50%;will-change:transform}
-.jay-wave-one{height:105px;bottom:-38px;opacity:.68;background:linear-gradient(90deg,transparent 2%,#8061c15c 20%,#689cdeaa 48%,#ac82e078 74%,transparent 98%);filter:blur(8px);animation:cojWaveOne 12s ease-in-out infinite alternate}
-.jay-wave-two{height:85px;bottom:-30px;opacity:.48;background:linear-gradient(90deg,transparent 0%,#6c8ac95c 18%,#a277cfa3 50%,#6696d16b 80%,transparent 100%);filter:blur(4px);animation:cojWaveTwo 15.333s ease-in-out infinite alternate}
-.jay-wave-three{height:50px;bottom:-12px;opacity:.35;border-top:1px solid #a5bfff88;background:linear-gradient(90deg,transparent,#7699d94a,transparent);animation:cojWaveThree 18s ease-in-out infinite alternate}
+/* Interpolated gradient colors keep the moving aura continuous across themes. */
+@property --aura-left{syntax:"<color>";inherits:false;initial-value:transparent}
+@property --aura-mid{syntax:"<color>";inherits:false;initial-value:transparent}
+@property --aura-right{syntax:"<color>";inherits:false;initial-value:transparent}
+.jay-aura-wave{transition:--aura-left 1.1s ease,--aura-mid 1.1s ease,--aura-right 1.1s ease,border-top-color 1.1s ease;position:absolute;left:-50%;width:200%;border-radius:50%;will-change:transform}
+.jay-wave-one{--aura-left:#8061c15c;--aura-mid:#689cdeaa;--aura-right:#ac82e078;height:105px;bottom:-38px;opacity:.68;background:linear-gradient(90deg,transparent 2%,var(--aura-left) 20%,var(--aura-mid) 48%,var(--aura-right) 74%,transparent 98%);filter:blur(8px);animation:cojWaveOne 12s ease-in-out infinite alternate}
+.jay-wave-two{--aura-left:#6c8ac95c;--aura-mid:#a277cfa3;--aura-right:#6696d16b;height:85px;bottom:-30px;opacity:.48;background:linear-gradient(90deg,transparent 0%,var(--aura-left) 18%,var(--aura-mid) 50%,var(--aura-right) 80%,transparent 100%);filter:blur(4px);animation:cojWaveTwo 15.333s ease-in-out infinite alternate}
+.jay-wave-three{--aura-mid:#7699d94a;height:50px;bottom:-12px;opacity:.35;border-top:1px solid #a5bfff88;background:linear-gradient(90deg,transparent,var(--aura-mid),transparent);animation:cojWaveThree 18s ease-in-out infinite alternate}
 @keyframes cojWaveOne{0%{transform:translate3d(-5%,4px,0) rotate(-4deg) scaleY(.85)}50%{transform:translate3d(2%,-7px,0) rotate(2deg) scaleY(1.12)}100%{transform:translate3d(7%,2px,0) rotate(-2deg) scaleY(.94)}}
 @keyframes cojWaveTwo{0%{transform:translate3d(7%,-2px,0) rotate(4deg) scaleY(1.08)}50%{transform:translate3d(-1%,7px,0) rotate(-3deg) scaleY(.88)}100%{transform:translate3d(-7%,-5px,0) rotate(2deg) scaleY(1.14)}}
 @keyframes cojWaveThree{0%{transform:translate3d(-8%,1px,0) rotate(-2deg)}100%{transform:translate3d(8%,-5px,0) rotate(3deg)}}
 .sub{letter-spacing:.5px;text-transform:none;font-size:12px}
 .wavebox{border-color:#7872ad;box-shadow:0 0 0 1px #8b83c033,0 0 16px #727bd41c}
-@media(prefers-reduced-motion:reduce){.jay-aura-wave{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.jay-aura-wave{animation:none!important;transition:none!important}}
  .new-source{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:nowrap;margin:12px auto 16px;max-width:520px;width:100%}
 .new-source #recordbox{display:flex;flex:0 0 138px;width:138px;justify-content:center;margin:0;padding:0;border:0;background:none}
 .new-source #newRingtone,.new-source #record{appearance:none;box-sizing:border-box;display:inline-flex;flex:0 0 138px;width:138px;min-width:0;max-width:138px;height:34px;min-height:34px;align-items:center;justify-content:center;text-align:center;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:11px;font-weight:650;line-height:1.2;padding:6px 3px;border-radius:15px;border:1px solid rgba(190,161,243,.25);color:#fff}
@@ -47,9 +51,9 @@ body[data-theme]:not([data-theme=default]) input[type=range],body[data-theme]:no
 body[data-theme]:not([data-theme=default]) #ringtoneName{background:var(--theme-panel)!important;color:var(--theme-text)!important;border-color:var(--theme-border)!important}
 body[data-theme]:not([data-theme=default]) .ringtone-hint,body[data-theme]:not([data-theme=default]) .ringtone-swipe,body[data-theme]:not([data-theme=default]) .times,body[data-theme]:not([data-theme=default]) .muted,body[data-theme]:not([data-theme=default]) .triple small,body[data-theme]:not([data-theme=default]) .status,body[data-theme]:not([data-theme=default]) .foot{color:var(--theme-muted)}
 body[data-theme]:not([data-theme=default]) .ringtone-hint strong,body[data-theme]:not([data-theme=default]) h1 span{color:var(--theme-accent)}
-body[data-theme]:not([data-theme=default]) .jay-wave-one{background:linear-gradient(90deg,transparent,var(--theme-accent-soft),var(--theme-accent2),var(--theme-accent-soft),transparent)}
-body[data-theme]:not([data-theme=default]) .jay-wave-two{background:linear-gradient(90deg,transparent,var(--theme-accent2-soft),var(--theme-accent),transparent)}
-body[data-theme]:not([data-theme=default]) .jay-wave-three{border-color:var(--theme-accent);background:linear-gradient(90deg,transparent,var(--theme-accent2-soft),transparent)}
+body[data-theme]:not([data-theme=default]) .jay-wave-one{--aura-left:var(--theme-accent-soft);--aura-mid:var(--theme-accent2);--aura-right:var(--theme-accent-soft)}
+body[data-theme]:not([data-theme=default]) .jay-wave-two{--aura-left:var(--theme-accent2-soft);--aura-mid:var(--theme-accent);--aura-right:var(--theme-accent2-soft)}
+body[data-theme]:not([data-theme=default]) .jay-wave-three{border-color:var(--theme-accent);--aura-mid:var(--theme-accent2-soft)}
 body[data-theme=bruin]{--theme-bg:#201915;--theme-text:#f7e9da;--theme-panel:#30251f;--theme-wave:#211a17;--theme-border:#775844;--theme-accent:#c29470;--theme-accent2:#91674e;--theme-muted:#c9af9d;--theme-glow:#a4785038;--theme-accent-soft:#c2947050;--theme-accent2-soft:#91674e50;--theme-button-text:#fff}
 body[data-theme=grijs]{--theme-bg:#25272b;--theme-text:#f4f4f5;--theme-panel:#36393e;--theme-wave:#202227;--theme-border:#646971;--theme-accent:#afb6c1;--theme-accent2:#858f9f;--theme-muted:#b8bec8;--theme-glow:#adb7c030;--theme-accent-soft:#afb6c150;--theme-accent2-soft:#858f9f50;--theme-button-text:#1d2025}
 body[data-theme=zwart]{--theme-bg:#080809;--theme-text:#f5f5f5;--theme-panel:#181819;--theme-wave:#0c0c0d;--theme-border:#414143;--theme-accent:#bcbcbc;--theme-accent2:#707070;--theme-muted:#aaa;--theme-glow:#ffffff20;--theme-accent-soft:#bcbcbc40;--theme-accent2-soft:#70707040;--theme-button-text:#101010}
