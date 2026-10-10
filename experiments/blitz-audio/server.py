@@ -36,3 +36,34 @@ async def probe_route(video_id: str):
         raise HTTPException(status_code=504, detail="Probe timed out")
     except Exception:
         raise HTTPException(status_code=502, detail="YouTube extraction unavailable")
+
+@app.get("/probe-alt/{video_id}")
+async def probe_alternative(video_id: str):
+    """Try alternate official YouTube player clients; metadata only, no cookies."""
+    if not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id):
+        raise HTTPException(status_code=400, detail="Invalid video ID")
+    results = []
+    for client in ("web_safari", "ios"):
+        def attempt():
+            with yt_dlp.YoutubeDL({
+                "quiet": True, "no_warnings": True, "skip_download": True,
+                "socket_timeout": 5, "retries": 0, "noplaylist": True,
+                "extractor_args": {"youtube": {"player_client": [client]}}
+            }) as ydl:
+                info = ydl.extract_info(
+                    "https://www.youtube.com/watch?v=" + video_id, download=False)
+            audio = [f for f in info.get("formats", [])
+                     if f.get("acodec") not in (None, "none") and f.get("url")]
+            return {"client": client, "ok": bool(audio),
+                    "audio_formats": len(audio)}
+        try:
+            result = await asyncio.wait_for(asyncio.to_thread(attempt), timeout=9)
+            results.append(result)
+            if result["ok"]:
+                break
+        except Exception as exc:
+            # Do not expose cookies, full upstream URLs, or internal tracebacks.
+            results.append({"client": client, "ok": False,
+                            "error_type": type(exc).__name__})
+    return {"ok": any(r["ok"] for r in results), "results": results,
+            "downloads": False, "cookies": False}
