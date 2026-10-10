@@ -1,0 +1,25 @@
+name: Deploy Ringtone Audio Test Worker
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ringtone-audio-test
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: test-audio-url-import-2026-10-10
+          persist-credentials: false
+      - name: Deploy isolated Cloudflare Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: experiments/cloudflare-audio-probe
+          command: deploy
