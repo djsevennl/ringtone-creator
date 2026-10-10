@@ -226,6 +226,8 @@ body[data-theme] .tools .volume-stack #saveProject:disabled{opacity:.45}
 /* v86: consistent media icons with solid arrows and matching proportions */
 .playbar .round svg{display:block;width:19px;height:19px;fill:currentColor;pointer-events:none}
 .playbar .play svg{width:23px;height:23px}
+/* v88: matching translucent glass styling for the three source buttons */
+body[data-theme] .new-source :is(#chooseFile,#record,#showProjects){background:linear-gradient(120deg,color-mix(in srgb,var(--theme-accent,#aa86d8) 12%,transparent),color-mix(in srgb,var(--theme-accent2,#6f9fdd) 9%,transparent));border:1px solid color-mix(in srgb,var(--theme-border,#b6a0da) 55%,transparent);color:var(--theme-text,#f4f1fa);box-shadow:inset 0 1px 0 #ffffff0a,0 2px 8px #0000000a;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:1}
 </style><script>
 const playbackIcons={play:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5v14l11-7z"/></svg>',pause:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'};
 function setPlaybackState(playing){const button=document.getElementById('play');button.innerHTML=playbackIcons[playing?'pause':'play'];button.title=playing?'Pauzeren':'Afspelen';button.setAttribute('aria-label',button.title)}
