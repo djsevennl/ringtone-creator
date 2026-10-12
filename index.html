@@ -142,10 +142,12 @@ body{min-height:100dvh}
 
 .project-actions{display:grid;grid-template-columns:136px 156px;justify-content:center;align-items:center;gap:12px;width:max-content;max-width:100%;margin:14px auto 14px}.project-actions button{width:100%;box-sizing:border-box;text-align:center;white-space:nowrap}.project-actions button{font-size:11px;font-weight:600;border:1px solid var(--theme-border,rgba(190,161,243,.30));border-radius:999px;background:var(--theme-accent-soft,rgba(135,112,185,.12));color:var(--theme-text,#fff);padding:6px 12px;opacity:.85;box-shadow:0 0 9px rgba(160,145,205,.07)}.project-actions button:active,.project-actions button:focus-visible{color:var(--theme-text,#fff);border-bottom-color:currentColor;opacity:1}.project-actions button:disabled{opacity:.3}.project-library button{font-size:11px;border:1px solid var(--theme-border,rgba(190,161,243,.35));border-radius:999px;background:transparent;color:var(--theme-text,#fff);padding:6px 10px}.project-library{margin:0 auto 12px;max-width:460px;overflow:hidden;max-height:0;opacity:0;transform:translateY(-8px);visibility:hidden;transition:max-height .38s ease,opacity .3s ease,transform .38s ease,visibility 0s linear .38s}.project-library.is-open{max-height:65vh;overflow-y:auto;opacity:1;transform:translateY(0);visibility:visible;transition:max-height .42s ease,opacity .3s ease,transform .42s ease,visibility 0s}.project-library[hidden]{display:none}.project-entry{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid var(--theme-border,rgba(190,161,243,.35));border-radius:12px;margin:6px 0}.project-entry span{font-size:12px;overflow-wrap:anywhere}
 /* Align project name and both actions in fixed columns across rows. */
-.project-entry{display:grid;grid-template-columns:minmax(0,1fr) 94px 94px;align-items:center;column-gap:10px}
-.project-entry>span{min-width:0}
+.project-entry{display:grid;grid-template-columns:76px minmax(0,1fr) 94px;align-items:center;column-gap:10px}
+.project-entry>span{min-width:0;grid-column:2;grid-row:1}
 .project-entry>button{width:100%;min-width:0;justify-self:stretch;text-align:center;white-space:nowrap}
-@media(max-width:390px){.project-entry{grid-template-columns:minmax(0,1fr) 82px 82px;column-gap:6px;padding:8px}.project-entry>button{padding-inline:5px;font-size:12px}}
+.project-entry>button:first-of-type{grid-column:3;grid-row:1}
+.project-entry>button:last-of-type{grid-column:1;grid-row:1;padding:7px 5px;font-size:12px;color:#ffb9b9;background:rgba(185,36,54,.24);border:1px solid rgba(244,84,103,.65);border-radius:999px}
+@media(max-width:390px){.project-entry{grid-template-columns:68px minmax(0,1fr) 82px;column-gap:6px;padding:8px}.project-entry>button{padding-inline:5px;font-size:12px}}
 
 /* Two centered, theme-aware import pills */
 .new-source{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:12px;max-width:360px;width:max-content;margin:12px auto 16px}
