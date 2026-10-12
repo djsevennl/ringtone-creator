@@ -290,6 +290,13 @@ body[data-theme]:not([data-theme=default]) .voice-studio .voice-actions button{b
 .new-source #openAppleMusic{width:36px!important;min-width:36px!important;max-width:36px!important;height:30px!important;min-height:30px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:3px!important;border-radius:10px!important}
 .new-source #openAppleMusic svg{display:block;width:23px;height:23px;flex-shrink:0}
 @media(max-width:390px){.new-source{grid-template-columns:32px repeat(4,minmax(0,1fr))!important;gap:4px!important}.new-source #openAppleMusic{width:32px!important;min-width:32px!important;max-width:32px!important}.new-source :is(#chooseFile,#record,#showProjects,#openVoiceStudio){font-size:clamp(8px,2.15vw,10px)!important;padding:2px!important}}
+
+/* Clean Apple Music icon, no pill border; balanced mobile source labels */
+.new-source{grid-template-columns:36px minmax(0,1.04fr) minmax(0,.68fr) minmax(0,1.03fr) minmax(0,1.18fr)!important;gap:5px!important}
+.new-source #openAppleMusic{background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;overflow:visible!important}
+.new-source #openAppleMusic svg{width:30px!important;height:30px!important;filter:none!important}
+.new-source :is(#chooseFile,#record,#showProjects,#openVoiceStudio){white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;font-size:clamp(9px,2.15vw,11px)!important;letter-spacing:-.12px!important;padding:2px 3px!important}
+@media(max-width:390px){.new-source{grid-template-columns:30px minmax(0,1.04fr) minmax(0,.65fr) minmax(0,1.03fr) minmax(0,1.2fr)!important;gap:4px!important}.new-source #openAppleMusic{width:30px!important;min-width:30px!important;max-width:30px!important}.new-source #openAppleMusic svg{width:28px!important;height:28px!important}.new-source :is(#chooseFile,#record,#showProjects,#openVoiceStudio){font-size:clamp(8px,2.12vw,10px)!important;padding:2px!important}}
 </style><script>
 const playbackIcons={play:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5v14l11-7z"/></svg>',pause:'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'};
 function setPlaybackState(playing){const button=document.getElementById('play');button.innerHTML=playbackIcons[playing?'pause':'play'];button.title=playing?'Pause':'Play';button.setAttribute('aria-label',button.title);button.dataset.playing=String(!!playing)}
