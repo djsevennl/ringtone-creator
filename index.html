@@ -364,7 +364,7 @@ const fxVal=id=>Number($('fx-'+id).value);
 const fxSemitones=()=>fxVal('pitch');
 const fxRate=()=>Math.pow(2,fxSemitones()/12);
 const fxLive={low:null,mid:null,high:null,echo:[],reverb:[],input:null,distortion:null};
-function distortionCurve(amount){const curve=new Float32Array(2048),drive=1+amount*.12,normalizer=Math.tanh(drive);for(let i=0;i<curve.length;i++){const x=i*2/(curve.length-1)-1;curve[i]=Math.tanh(drive*x)/normalizer}return curve}
+function distortionCurve(amount){const curve=new Float32Array(2048),drive=1+amount*.12,normalizer=Math.tanh(drive);for(let i=0;i<curve.length;i++){const x=i*2/(curve.length-1)-1;curve[i]=amount?Math.tanh(drive*x)/normalizer:x}return curve}
 let keyUpdateTimer=null;
 function applyLiveFx(id){
  if(!loopCtx||!loopSource)return;
