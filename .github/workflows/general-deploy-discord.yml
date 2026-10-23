@@ -1,0 +1,47 @@
+name: General Deploy Discord
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+jobs:
+  notify:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.name != 'General Deploy Discord' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send deployment result to general-deploy
+        env:
+          WEBHOOK: ${{ secrets.GENERAL_DEPLOY_DISCORD_WEBHOOK }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.event.workflow_run.name }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          TARGET_URL: ${{ github.event.workflow_run.html_url }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          FALLBACK_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::GENERAL_DEPLOY_DISCORD_WEBHOOK secret missing in this repository"
+            exit 0
+          fi
+          node --input-type=module <<'NODE'
+          const status=process.env.EVENT==='workflow_dispatch'?'test':process.env.CONCLUSION;
+          const symbol=status==='success'?'✅':status==='test'?'🧪':'❌';
+          const content=[
+            symbol+' [GitHub Actions] '+process.env.REPO,
+            'Workflow: '+(process.env.WORKFLOW||'General Deploy test'),
+            'Status: '+status,
+            'Branch: '+(process.env.BRANCH||'unknown'),
+            process.env.TARGET_URL||process.env.FALLBACK_URL
+          ].join('\n');
+          const r=await fetch(process.env.WEBHOOK,{
+            method:'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({content,allowed_mentions:{parse:[]}}),
+            signal:AbortSignal.timeout(10000)
+          });
+          if(!r.ok)throw Error('Discord HTTP '+r.status);
+          NODE
