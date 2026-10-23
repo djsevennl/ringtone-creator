@@ -1,6 +1,20 @@
 name: General Deploy Discord
 on:
   workflow_run:
+    workflows:
+      - "Deploy Shopify Engine 2 isolated Worker"
+      - "Deploy"
+      - "Build"
+      - "CI"
+      - "CI/CD"
+      - "Cloudflare Pages"
+      - "Deploy to Cloudflare Pages"
+      - "Vercel"
+      - "Android CI"
+      - "Android Build"
+      - "Build APK"
+      - "Deploy to Cloudflare"
+      - "Deploy to Vercel"
     types: [completed]
   workflow_dispatch:
 permissions:
