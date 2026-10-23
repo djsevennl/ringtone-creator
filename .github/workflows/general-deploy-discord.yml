@@ -1,7 +1,6 @@
 name: General Deploy Discord
 on:
   workflow_run:
-    workflows: ["*"]
     types: [completed]
   workflow_dispatch:
 permissions:
