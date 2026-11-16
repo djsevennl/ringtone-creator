@@ -1,0 +1,69 @@
+name: GitHub activity Discord notifications
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, synchronize, closed, ready_for_review]
+  issues:
+    types: [opened, closed, reopened]
+  release:
+    types: [published]
+  workflow_run:
+    workflows: ['*']
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord of GitHub activity
+        env:
+          WEBHOOK: ${{ secrets.GENERAL_DEPLOY_DISCORD_WEBHOOK }}
+          EVENT: ${{ github.event_name }}
+          EVENT_JSON: ${{ toJSON(github.event) }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          REF: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          const e=JSON.parse(process.env.EVENT_JSON);
+          const event=process.env.EVENT;
+          let title='',details='',link=process.env.RUN_URL;
+          if(event==='workflow_run'){
+            const run=e.workflow_run;
+            if(!run)throw Error('Missing workflow run payload');
+            const status=run.conclusion==='success'?'✅':run.conclusion==='failure'?'❌':'⚠️';
+            title=status+' GitHub Actions: '+run.name;
+            details='Status: '+(run.conclusion||run.status)+'\nBranch: '+run.head_branch+'\nCommit: '+run.head_sha.slice(0,10);
+            link=run.html_url;
+          }else if(event==='push'){
+            title='📦 GitHub push';
+            details='Branch: '+process.env.REF+'\nCommit: '+process.env.SHA.slice(0,10)+'\nDoor: '+process.env.ACTOR;
+            link=e.compare||process.env.RUN_URL;
+          }else if(event==='pull_request'){
+            title='🔀 Pull request '+e.action;
+            details='#'+e.number+' '+e.pull_request.title+'\nDoor: '+process.env.ACTOR;
+            link=e.pull_request.html_url;
+          }else if(event==='issues'){
+            title='📋 Issue '+e.action;
+            details='#'+e.issue.number+' '+e.issue.title+'\nDoor: '+process.env.ACTOR;
+            link=e.issue.html_url;
+          }else if(event==='release'){
+            title='🚀 Release published';
+            details=e.release.name||e.release.tag_name;
+            link=e.release.html_url;
+          }else throw Error('Unsupported event: '+event);
+          if(!process.env.WEBHOOK)throw Error('Missing GENERAL_DEPLOY_DISCORD_WEBHOOK secret');
+          const content=[title,process.env.REPO,details,link].join('\n').slice(0,1950);
+          const response=await fetch(process.env.WEBHOOK+'?wait=true',{
+            method:'POST',headers:{'content-type':'application/json'},
+            body:JSON.stringify({content,allowed_mentions:{parse:[]}}),
+            signal:AbortSignal.timeout(15000)
+          });
+          if(!response.ok)throw Error('Discord HTTP '+response.status);
+          const result=await response.json();
+          if(!result.id)throw Error('Discord receipt missing');
+          console.log('Discord notification delivered: '+result.id);
+          NODE
